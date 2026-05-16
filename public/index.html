@@ -334,34 +334,22 @@
     </div>
 
     <section class="demo-section" aria-label="Demo examples">
-      <h2>Demo Examples: Wrong vs UA Ready</h2>
+      <h2 id="demoTitle">Demo Examples: Wrong vs UA Ready Email</h2>
       <div class="demo-grid">
         <div class="demo-card wrong">
-          <h3>Wrong Email</h3>
-          <ul>
+          <h3 id="wrongLabel">Wrong Email</h3>
+          <ul id="wrongList">
             <li>notanemail</li>
             <li>user@</li>
             <li>@example.com</li>
           </ul>
-          <h3>Wrong Domain</h3>
-          <ul>
-            <li>example</li>
-            <li>example..com</li>
-            <li>.example.com</li>
-          </ul>
         </div>
         <div class="demo-card ready">
-          <h3>UA Ready Email</h3>
-          <ul>
+          <h3 id="readyLabel">UA Ready Email</h3>
+          <ul id="readyList">
             <li>राम@नेपाल.नेपाल</li>
             <li>用户@中文.中国</li>
             <li>пользователь@пример.рф</li>
-          </ul>
-          <h3>UA Ready Domain</h3>
-          <ul>
-            <li>नेपाल.नेपाल</li>
-            <li>中文.中国</li>
-            <li>пример.рф</li>
           </ul>
         </div>
       </div>
@@ -415,8 +403,50 @@
         } else {
           document.getElementById('domainInput').focus();
         }
+
+        updateDemoSection(tab);
       });
     });
+
+    function updateDemoSection(tab) {
+      const demoTitle = document.getElementById('demoTitle');
+      const wrongLabel = document.getElementById('wrongLabel');
+      const readyLabel = document.getElementById('readyLabel');
+      const wrongList = document.getElementById('wrongList');
+      const readyList = document.getElementById('readyList');
+
+      if (tab === 'domain') {
+        demoTitle.textContent = 'Demo Examples: Wrong vs UA Ready Domain';
+        wrongLabel.textContent = 'Wrong Domain';
+        readyLabel.textContent = 'UA Ready Domain';
+        wrongList.innerHTML = `
+          <li>example</li>
+          <li>example..com</li>
+          <li>.example.com</li>
+        `;
+        readyList.innerHTML = `
+          <li>नेपाल.नेपाल</li>
+          <li>中文.中国</li>
+          <li>пример.рф</li>
+        `;
+      } else {
+        demoTitle.textContent = 'Demo Examples: Wrong vs UA Ready Email';
+        wrongLabel.textContent = 'Wrong Email';
+        readyLabel.textContent = 'UA Ready Email';
+        wrongList.innerHTML = `
+          <li>notanemail</li>
+          <li>user@</li>
+          <li>@example.com</li>
+        `;
+        readyList.innerHTML = `
+          <li>राम@नेपाल.नेपाल</li>
+          <li>用户@中文.中国</li>
+          <li>пользователь@пример.рф</li>
+        `;
+      }
+    }
+
+    updateDemoSection('email');
 
     // Email validation
     async function validateEmail() {
