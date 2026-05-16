@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validation Confirmation</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 45%, #7c3aed 100%);
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 760px;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      padding: 32px;
+      backdrop-filter: blur(10px);
+    }
+
+    .eyebrow {
+      color: #93c5fd;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 34px;
+      margin-bottom: 10px;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      color: #cbd5e1;
+      margin-bottom: 28px;
+      font-size: 15px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .status.valid {
+      background: rgba(16, 185, 129, 0.16);
+      color: #6ee7b7;
+    }
+
+    .status.invalid {
+      background: rgba(239, 68, 68, 0.16);
+      color: #fca5a5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .item {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px;
+      overflow-wrap: anywhere;
+    }
+
+    .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #93c5fd;
+      margin-bottom: 8px;
+    }
+
+    .value {
+      font-size: 16px;
+      color: #f8fafc;
+      line-height: 1.45;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #38bdf8 0%, #8b5cf6 100%);
+      color: white;
+    }
+
+    .empty {
+      display: none;
+      color: #fca5a5;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 22px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="eyebrow">Validation Confirmation</div>
+    <h1 id="title">Confirmed Information</h1>
+    <p class="subtitle">This page shows the validation result on a dedicated screen after the button is clicked.</p>
+
+    <div id="emptyState" class="empty">
+      No validation data was found. Go back and validate an email address or domain first.
+    </div>
+
+    <div id="content" style="display:none;">
+      <div id="statusBadge" class="status"></div>
+      <div class="grid">
+        <div class="item">
+          <div class="label">Type</div>
+          <div id="kindValue" class="value"></div>
+        </div>
+        <div class="item">
+          <div class="label">Input</div>
+          <div id="inputValue" class="value"></div>
+        </div>
+        <div class="item full">
+          <div class="label">Confirmed Details</div>
+          <div id="detailsValue" class="value"></div>
+        </div>
+        <div class="item full">
+          <div class="label">Standards</div>
+          <div id="standardsValue" class="value"></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="btn primary" href="/">Validate Another</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const payloadText = localStorage.getItem('uareadyConfirmation');
+    const emptyState = document.getElementById('emptyState');
+    const content = document.getElementById('content');
+
+    if (!payloadText) {
+      emptyState.style.display = 'block';
+    } else {
+      const payload = JSON.parse(payloadText);
+      const result = payload.result || {};
+      const isValid = Boolean(result.valid);
+
+      document.getElementById('statusBadge').textContent = isValid ? 'Confirmed as Valid' : 'Validation Failed';
+      document.getElementById('statusBadge').className = isValid ? 'status valid' : 'status invalid';
+      document.getElementById('kindValue').textContent = payload.kind === 'email' ? 'Email Address' : 'Domain Name';
+      document.getElementById('inputValue').textContent = payload.input || '-';
+
+      if (isValid) {
+        if (payload.kind === 'email') {
+          document.getElementById('title').textContent = 'Email Confirmed';
+          document.getElementById('detailsValue').innerHTML = [
+            `<div>Normalized Email: <strong>${result.email}</strong></div>`,
+            `<div>ACE Email: <strong>${result.aceEmail}</strong></div>`,
+            `<div>Local Part: <strong>${result.localPart}</strong></div>`,
+            `<div>Domain: <strong>${result.domain}</strong></div>`
+          ].join('');
+          document.getElementById('standardsValue').innerHTML = [
+            `<div>SMTPUTF8: <strong>${result.standards?.smtputf8 ? 'Yes' : 'No'}</strong></div>`,
+            `<div>EAI: <strong>${result.standards?.eai ? 'Yes' : 'No'}</strong></div>`,
+            `<div>IDNA2008: <strong>${result.standards?.idna2008 ? 'Yes' : 'No'}</strong></div>`
+          ].join('');
+        } else {
+          document.getElementById('title').textContent = 'Domain Confirmed';
+          document.getElementById('detailsValue').innerHTML = [
+            `<div>Normalized Domain: <strong>${result.domain}</strong></div>`,
+            `<div>ACE Domain: <strong>${result.aceDomain}</strong></div>`,
+            `<div>Labels: <strong>${Array.isArray(result.labels) ? result.labels.join(' → ') : '-'}</strong></div>`
+          ].join('');
+          document.getElementById('standardsValue').innerHTML = [
+            `<div>IDN: <strong>${result.isIDN ? 'Yes' : 'No'}</strong></div>`,
+            `<div>IDNA2008: <strong>${result.isIDN ? 'Yes' : 'No'}</strong></div>`
+          ].join('');
+        }
+      } else {
+        document.getElementById('title').textContent = 'Validation Result';
+        document.getElementById('detailsValue').innerHTML = `<div><strong>Error:</strong> ${result.error || 'Unknown validation error'}</div>`;
+        document.getElementById('standardsValue').innerHTML = '<div>No standards data available for invalid input.</div>';
+      }
+
+      content.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

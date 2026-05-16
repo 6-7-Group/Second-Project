@@ -1,0 +1,15 @@
+{
+  "name": "uaready-email-validator",
+  "version": "1.0.0",
+  "description": "UAReady Email and Domain Validation System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "punycode": "^2.3.1"
+  }
+}
