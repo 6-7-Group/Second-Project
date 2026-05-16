@@ -174,7 +174,21 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'UAReady Email and Domain Validator is running' });
 });
 
-app.listen(PORT, () => {
-  console.log(`✓ UAReady Email Validator running on http://localhost:${PORT}`);
-  console.log(`✓ Open http://localhost:${PORT} in your browser`);
+app.listen(PORT, '0.0.0.0', () => {
+  const os = require('os');
+  const interfaces = os.networkInterfaces();
+  let ipAddress = 'localhost';
+  
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        ipAddress = iface.address;
+        break;
+      }
+    }
+  }
+  
+  console.log(`✓ UAReady Email Validator running`);
+  console.log(`✓ Local:   http://localhost:${PORT}`);
+  console.log(`✓ Network: http://${ipAddress}:${PORT}`);
 });
